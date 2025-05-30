@@ -15,6 +15,35 @@ _by fathih_
 
 _(Bagian ini berisi penjelasan umum sistem aeroponik: perangkat keras yang digunakan, komunikasi antar panel, aliran data, dsb.)_
 
+### Daftar isi terkait Sistem 
+
+1. [Penjelasan Umum Aeroponik](#1-penjelasan-umum-aeroponik)  
+2. [Perangkat Keras yang digunakan](#2-perangkat-keras-yang-digunakan)  
+3. [Komunikasi yang digunakan](#3-komunikasi-yang-digunakan)
+4. [Aliran data dalam sistem](#-aliran-data-dalam-sistem)
+
+### 1. Penjelasan Umum Aeroponik 
+
+Aeroponik adalah sebuah **sistem yang menyuplai segala kebutuhan tanaman yang tidak bermedia tanah maupun air untuk tumbuh dan berkembang.** Pada aeroponik, suplai nutrisi dipenuhi dengan menyemprotkan air bernutrisi ke akar tanaman secara langsung. pada media tanam tanah dan air, suplai oksigen dan air menjadi faktor yang membatasi pertumbuhan tanaman. pada sistem aeropoik ini, kebutuhan oksigen dan air diberikan secara efisien, sehingga tidak lagi menjadi faktor penghambat. _wikipedia_
+
+![Ilustrasi terkait Aeroponik](https://github.com/Fathihzhafran/MBKM_Aeroponik_documentation/blob/7c5f237b95fe8b7d03da56000beb5c9f13512df0/Image/download.jpg)
+
+Ada beberapa jenis aeroponik yang biasanya digunakan
+1. 
+
+### 2. Perangkat keras yang digunakan
+
+
+
+### 3. Komunikasi yang digunakan 
+
+
+
+### 4. Aliran data dalam sistem 
+
+
+
+
 ## 2. Desain dari sistem
 
 _(Bagian ini memuat skema desain sistem aeroponik, diagram blok, relasi antar modul, serta desain topologi komunikasi.)_
