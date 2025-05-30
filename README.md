@@ -301,9 +301,9 @@ Alamat register yang dijelaskan pada program/penjelasan diatas menyesuaikan pada
 
 ![Addres yang digunakan pada sensor CWT-TH04S](https://github.com/Fathihzhafran/MBKM_Aeroponik_documentation/blob/e7a1e4e433fcecf48962778f1d58d0741bd61c6e/Image/Screenshot%202025-05-30%20162419.png)
 
-2. **Untuk CWT-Soil-THC-S**
+2. **Untuk CWT-THCPH-S**
 
-![Addres yang digunakan pada sensor CWT-Soil-THC-S](https://github.com/Fathihzhafran/MBKM_Aeroponik_documentation/blob/e7a1e4e433fcecf48962778f1d58d0741bd61c6e/Image/Screenshot%202025-05-30%20162102.png)
+![Addres yang digunakan pada sensor CWT-Soil-THC-S](https://github.com/Fathihzhafran/MBKM_Aeroponik_documentation/blob/40e5a1bd7cdbf588d3c6bf37970182223f580bab/Image/Screenshot%202025-05-30%20170609.png)
 
 
 ### 7. Fungsi loop
