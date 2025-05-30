@@ -1,6 +1,8 @@
 # **MBKM Aeroponik documentation** :seedling:
 Dokumentasi untuk sistem **MBKM Aeroponik**, mencakup seluruh aspek dari sistem, desain, hingga pemrograman yang digunakan dalam implementasi proyek ini.
 
+![Ilustrasi Sistem Aeoroponik dalam rancangan ini](https://github.com/Fathihzhafran/MBKM_Aeroponik_documentation/blob/f4ab73c94ae08fb66da3e35dbf9a9b10b971b886/Image/Aeroponik6.JPG)
+
 _by fathih_
 
 ## Daftar isi Dokumentasi Sistem Aeroponik 
