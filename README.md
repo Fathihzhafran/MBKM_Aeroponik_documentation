@@ -1,11 +1,17 @@
-# MBKM_Aeroponik_documentation
+# **MBKM Aeroponik documentation** :seedling:
 berisi terkait dokumentasi MBKM Aeroponik dari kesleuruhan sistem/design/program 
 
-## Panduan Lengkap Program Panel Slave
+## Daftar isi Dokumentasi Sistem Aeroponik 
+
+## 1. Sistem Keseluruhan 
+
+## 2. Desain dari sistem
+
+## 3. Panduan Lengkap Program Panel Slave
 
 Pada bagian ini membberikan penjelasan terkait program arduino yang dirancang untuk board ATmega128 dalam Outseal Mikrokontroler from PLC Outseal. yang mana berfungsi untuk membaca data dari beberapa sensor dengan menggunakan modbus RTU, yang mengendalikan output digital (relay) serta berkomunikasi dengan panel master melalui antarmuka serial menggunakan format JSON.
 
-### Daftar Isi
+### Daftar Isi Penjelasan Program
 1.  [Pendahuluan](###pendahuluan-program)
 2.  [Inklusi Library dan Definisi Global](###inklusi-library-dan-definisi-global)
 3.  [Fungsi Kontrol Transmisi Modbus](###fungsi-kontrol-transmisi-modbus)
@@ -78,7 +84,7 @@ Penjelasan Variabel Global:
 - holdingRegisterOutput[3], holdingRegisterInput[2], holdingRegister[20]: Array-array ini berfungsi sebagai buffer data internal. Mereka dapat digunakan untuk memetakan status I/O ke format register Modbus jika Arduino juga dirancang untuk berperan sebagai perangkat Slave Modbus, atau hanya sebagai cara terstruktur untuk mengelola data state internal.
 - jsonDoc: Objek dari library ArduinoJson yang digunakan untuk membangun struktur data JSON sebelum dikirim melalui serial. Ukuran 512 byte adalah kapasitas memori yang dialokasikan untuk dokumen JSON ini; jika data JSON Anda lebih besar, ukuran ini perlu ditingkatkan.
 
-### Fungsi Kontrol Transmisi Modbus
+### 3. Fungsi Kontrol Transmisi Modbus
 
 Untuk komunikasi RS485, yang bersifat half-duplex (mengirim atau menerima secara bergantian pada jalur yang sama), diperlukan kontrol arah transmisi. Pin DM (Driver Master, sesuai definisi di PinoutOutsealAtmega128.h) digunakan untuk tujuan ini, biasanya terhubung ke pin DE (Driver Enable) dan RE (Receiver Enable) pada chip transceiver RS485 dengan MAX485.
 
@@ -102,7 +108,7 @@ Penjelasan
 - preTransmission(): Fungsi ini secara otomatis dipanggil oleh library ModbusMaster tepat sebelum Arduino mengirimkan permintaan Modbus ke sensor. Dengan mengatur pin DM ke HIGH, transceiver RS485 diaktifkan untuk mode transmisi (mengirim data).
 - postTransmission(): Fungsi ini dipanggil secara otomatis setelah Arduino selesai mengirimkan permintaan Modbus. Dengan mengatur pin DM ke LOW, transceiver RS485 kembali ke mode penerimaan, siap untuk menangkap respons dari sensor.
 
-### Fungsi setup()
+### 4. Fungsi setup()
 
 Fungsi yang mana diinisiasikan sekali dalam program arduino, dengan melakukan konfigurasi dan inialisasi awal yang diperlukan agar program dapat berjalan dengan lancar dan benar.
 
@@ -162,4 +168,186 @@ Penjelasan terkait setup();
     - Pin-pin yang terhubung ke relay (R1, R2, R3, R4) dikonfigurasi sebagai OUTPUT.
     - Pin-pin yang terhubung ke input digital (S1, S2) dikonfigurasi sebagai INPUT. Pertimbangkan penggunaan INPUT_PULLUP jika input Anda adalah saklar atau sensor kontak yang terhubung ke ground saat aktif, untuk menghindari kebutuhan resistor pull-up eksternal.
 
-### Fungsi UpdateTriggers
+### 5. Fungsi UpdateTriggers
+
+Fungsi ini bertanggung jawab untuk membaca status terkini dari input digital (S1 dan S2) dan memperbarui variabel-variabel global yang menyimpan status pemicu (trigger) ini. Ini memastikan bahwa representasi internal dari status input selalu sinkron dengan kondisi fisik input.
+
+```cpp
+// --- Fungsi untuk Memperbarui Status Pemicu (Trigger) ---
+// Fungsi ini membaca input digital S1 dan S2 dan memperbarui variabel terkait.
+void updateTriggers() {
+  // Membaca pin S1. Jika S1 dalam kondisi LOW (misalnya tombol ditekan atau sensor aktif LOW), 
+  // maka ekspresi 'digitalRead(S1) == LOW' bernilai true (atau 1 dalam konteks integer).
+  // Sebaliknya, jika HIGH, bernilai false (atau 0).
+  trig[0] = digitalRead(S1) == LOW;
+  // Hal yang sama berlaku untuk pin S2 dan variabel trig[1].
+  trig[1] = digitalRead(S2) == LOW;
+
+  // Menyimpan status trigger yang baru dibaca ke dalam array holdingRegisterInput.
+  // Ini bisa berguna jika Anda ingin mengekspos status input ini melalui Modbus (jika Arduino jadi slave)
+  // atau untuk logging internal yang terstruktur.
+  holdingRegisterInput[0] = trig[0];
+  holdingRegisterInput[1] = trig[1];
+
+  // Juga memperbarui elemen-elemen spesifik dalam array holdingRegister umum yang dialokasikan untuk input.
+  holdingRegister[2] = holdingRegisterInput[0]; // Merefleksikan status Input 1 (S1)
+  holdingRegister[3] = holdingRegisterInput[1]; // Merefleksikan status Input 2 (S2)
+}
+```
+Penjelasan:
+
+- trig[0] = digitalRead(S1) == LOW;: Baris ini membaca level logika pada pin S1. Jika levelnya LOW (yang seringkali berarti aktif untuk sensor atau tombol yang terhubung ke ground), maka digitalRead(S1) == LOW akan menghasilkan true (yang dikonversi menjadi 1 saat disimpan ke trig[0]). Jika HIGH, hasilnya false (dikonversi menjadi 0). Proses serupa terjadi untuk S2 dan trig[1].
+- Status dari trig[] kemudian disalin ke holdingRegisterInput[] dan juga ke elemen-elemen tertentu (holdingRegister[2] dan holdingRegister[3]) dari array holdingRegister[] utama. Ini menyediakan beberapa cara untuk mengakses status input yang sama, yang mungkin berguna tergantung pada bagaimana data digunakan atau diekspos.
+
+### 6. Fungsi ReadSendDatasensor
+  
+### 7. Fungsi loop
+
+Langsung saja-lah ya
+
+```cpp
+// --- Fungsi Loop Utama ---
+// Fungsi loop() berjalan berulang kali selamanya setelah setup() selesai.
+void loop() {
+  // 1. Baca status input digital S1 dan S2 secara langsung.
+  // Nilai ini disimpan ke IN_1 dan IN_2.
+  // Pembaruan trig[] di sini mungkin tumpang tindih dengan updateTriggers(),
+  // namun memastikan IN_1/IN_2 dan trig[] selalu up-to-date di awal loop.
+  IN_1 = digitalRead(S1) == LOW;
+  IN_2 = digitalRead(S2) == LOW;
+
+  trig[0] = IN_1; // Sinkronisasi trig dengan pembacaan langsung.
+  trig[1] = IN_2;
+
+  // 2. Periksa apakah ada data (perintah) yang masuk dari port Serial (dari host).
+  if (Serial.available() > 0) {
+    // Jika ada data, baca seluruh string perintah sampai karakter newline ('\n') ditemukan.
+    String input = Serial.readStringUntil('\n');
+    input.trim(); // Hapus spasi putih (whitespace) di awal atau akhir string perintah.
+
+    // Proses perintah berdasarkan karakter pertama dari string input.
+    // Ini adalah cara sederhana untuk routing perintah.
+    switch (input.charAt(0)) {
+      case 'P': // Perintah yang dimulai dengan 'P' diasumsikan untuk PUMP (Pompa/Output).
+        if (input == "PUMP1_ON") {
+          OUT_1 = 1; // Set status target OUT_1 menjadi ON.
+        } else if (input == "PUMP1_OFF") {
+          OUT_1 = 0; // Set status target OUT_1 menjadi OFF.
+        } else if (input == "PUMP2_ON") {
+          OUT_2 = 1;
+        } else if (input == "PUMP2_OFF") {
+          OUT_2 = 0;
+        } else if (input == "PUMP3_ON") {
+          OUT_3 = 1; // OUT_3 akan mengontrol Relay R4.
+        } else if (input == "PUMP3_OFF") {
+          OUT_3 = 0;
+        } else {
+          // Jika perintah 'P' tidak dikenal, kirim pesan error.
+          Serial.println("Unknown PUMP command: " + input);
+        }
+        break; // Akhir dari case 'P'.
+
+      case 'R': // Perintah yang dimulai dengan 'R' diasumsikan untuk READ (Baca Data).
+        if (input == "READ_DATA") {
+          // Panggil fungsi readSendDatasensor() sebanyak 5 kali.
+          // Ini berarti Arduino akan membaca semua sensor dan mengirim paket JSON
+          // sebanyak 5 kali berturut-turut untuk satu perintah "READ_DATA".
+          // Jika Anda hanya ingin satu kali pembacaan dan pengiriman per perintah,
+          // hapus loop 'for' ini dan panggil readSendDatasensor() sekali saja.
+          for (int i = 0; i < 5; i++) {
+            readSendDatasensor();
+          }
+        } else {
+          Serial.println("Unknown READ command: " + input);
+        }
+        break; // Akhir dari case 'R'.
+
+      case 'A': // Perintah yang dimulai dengan 'A' diasumsikan untuk ALARM.
+        if (input == "ALARM1_ON") {
+          digitalWrite(R3, HIGH); // Langsung mengaktifkan Relay R3.
+                                  // (Gunakan HIGH atau LOW tergantung cara relay Anda di-wire,
+                                  //  misalnya jika relay aktif LOW, maka gunakan LOW untuk ON).
+                                  // Asumsi di sini: HIGH = ON.
+        } else if (input == "ALARM1_OFF") {
+          digitalWrite(R3, LOW);  // Langsung menonaktifkan Relay R3.
+                                  // Asumsi di sini: LOW = OFF.
+        } else {
+          Serial.println("Unknown ALARM command: " + input);
+        }
+        break; // Akhir dari case 'A'.  
+
+      default: // Jika karakter pertama perintah tidak cocok dengan case manapun.
+        Serial.println("Unknown Command: " + input);
+        break;
+    }
+  }
+
+  // 3. Perbarui array-array holdingRegister dengan status output dan input saat ini.
+  // Ini menyatukan status dari berbagai sumber (perintah serial, pembacaan input)
+  // ke dalam satu set buffer data.
+  holdingRegisterOutput[0] = OUT_1; // Status target untuk PUMP1.
+  holdingRegisterOutput[1] = OUT_2; // Status target untuk PUMP2.
+  holdingRegisterOutput[2] = OUT_3; // Status target untuk PUMP3 (yang mengontrol R4).
+
+  // holdingRegisterInput sudah diperbarui oleh updateTriggers() atau pembacaan langsung IN_1/IN_2 di atas.
+  holdingRegisterInput[0] = IN_1; 
+  holdingRegisterInput[1] = IN_2;
+
+  // Salin nilai dari buffer input/output spesifik ke array holdingRegister utama.
+  // Pemetaan ini menentukan bagaimana status I/O internal direpresentasikan dalam holdingRegister.
+  holdingRegister[0] = holdingRegisterOutput[0]; // Map OUT_1 ke holdingRegister[0].
+  holdingRegister[1] = holdingRegisterOutput[1]; // Map OUT_2 ke holdingRegister[1].
+  holdingRegister[2] = holdingRegisterInput[0];  // Map IN_1 (status S1) ke holdingRegister[2].
+  holdingRegister[3] = holdingRegisterInput[1];  // Map IN_2 (status S2) ke holdingRegister[3].
+  holdingRegister[4] = holdingRegisterOutput[2]; // Map OUT_3 ke holdingRegister[4].
+
+  // 4. Tulis status output dari holdingRegister ke pin-pin relay fisik.
+  // Relay R3 dikontrol langsung oleh perintah 'A' (ALARM) dan tidak melalui sistem holdingRegister ini.
+  digitalWrite(R1, holdingRegister[0]); // Relay R1 dikontrol oleh status OUT_1.
+  digitalWrite(R2, holdingRegister[1]); // Relay R2 dikontrol oleh status OUT_2.
+  digitalWrite(R4, holdingRegister[4]); // Relay R4 dikontrol oleh status OUT_3.
+                                        // (karena holdingRegister[4] = holdingRegisterOutput[2] = OUT_3).
+
+  // 5. Panggil updateTriggers() lagi di akhir loop.
+  // Ini memastikan bahwa sebelum iterasi loop berikutnya dimulai, status pemicu
+  // (trig[], holdingRegisterInput[], holdingRegister[2,3]) sudah yang paling baru.
+  updateTriggers();
+
+  // 6. Beri jeda singkat pada akhir setiap iterasi loop.
+  // Ini bisa membantu dalam mengurangi beban CPU, memberikan waktu untuk proses lain (jika ada interrupt),
+  // atau menyesuaikan dengan interval waktu tertentu jika program ini bagian dari sistem yang lebih besar.
+  // Nilai 50ms adalah contoh; sesuaikan sesuai kebutuhan.
+  delay(50); 
+}
+```
+Penjelasan Rinci loop():
+1. Pembacaan Input Awal: IN_1 = digitalRead(S1) == LOW; dan IN_2 = digitalRead(S2) == LOW; membaca status pin S1 dan S2. Hasilnya (1 jika LOW, 0 jika HIGH) disimpan ke IN_1 dan IN_2, lalu disalin ke trig[0] dan trig[1].
+
+2. Pemrosesan Perintah Serial:
+- if (Serial.available() > 0): Mengecek apakah ada data yang dikirim dari host melalui port Serial.
+- String input = Serial.readStringUntil('\n');: Jika ada, membaca seluruh baris teks hingga karakter newline (\n) sebagai perintah.
+- input.trim(): Menghapus spasi di awal/akhir perintah.
+- switch (input.charAt(0)): Memproses perintah berdasarkan karakter pertamanya:
+  - case 'P' (PUMP): Jika perintah diawali 'P', kode akan membandingkan input dengan string perintah lengkap seperti "PUMP1_ON", "PUMP1_OFF", dll. Jika cocok, variabel OUT_1, OUT_2, atau OUT_3 akan diubah (menjadi 1 untuk ON, 0 untuk OFF). Perhatikan bahwa OUT_3 nantinya akan mengontrol relay R4.
+  - case 'R' (READ): Jika perintah adalah "READ_DATA", fungsi readSendDatasensor() akan dipanggil 5 kali berturut-turut. Ini berarti untuk satu perintah "READ_DATA", Arduino akan melakukan 5 siklus pembacaan semua sensor dan mengirim 5 paket JSON terpisah.
+  - case 'A' (ALARM): Jika perintah "ALARM1_ON" atau "ALARM1_OFF", pin relay R3 akan langsung dikontrol menggunakan digitalWrite(). Ini berbeda dengan relay lain yang dikontrol melalui variabel OUT_x.
+  - default: Jika karakter pertama tidak cocok dengan 'P', 'R', atau 'A', atau jika perintah lengkap tidak dikenal dalam sub-kondisi, pesan error akan dikirim kembali melalui Serial.
+
+3. Pembaruan holdingRegister:
+- Status variabel OUT_1, OUT_2, OUT_3 disalin ke holdingRegisterOutput[].
+- Status IN_1, IN_2 disalin ke holdingRegisterInput[].
+- Kemudian, nilai-nilai dari holdingRegisterOutput[] dan holdingRegisterInput[] dipetakan ke dalam array holdingRegister[] yang lebih besar. Ini menciptakan representasi terpusat dari status I/O sistem.
+    - holdingRegister[0] untuk OUT_1
+    - holdingRegister[1] untuk OUT_2
+    - holdingRegister[2] untuk IN_1 (status S1)
+    - holdingRegister[3] untuk IN_2 (status S2)
+    - holdingRegister[4] untuk OUT_3
+
+4. Pengaktifan Relay Fisik:
+- digitalWrite(R1, holdingRegister[0]);: Mengatur kondisi pin R1 sesuai dengan nilai di holdingRegister[0] (yang berasal dari OUT_1).
+- digitalWrite(R2, holdingRegister[1]);: Mengatur pin R2 sesuai OUT_2.
+- digitalWrite(R4, holdingRegister[4]);: Mengatur pin R4 sesuai OUT_3.
+- Relay R3 tidak diatur di sini karena sudah dikontrol langsung dalam case 'A'.
+
+5. updateTriggers() (Akhir Loop): Memanggil fungsi ini lagi untuk memastikan bahwa sebelum loop berikutnya dimulai, semua variabel yang terkait dengan status input (trig[], holdingRegisterInput[], dll.) sudah mencerminkan kondisi fisik terkini dari S1 dan S2.
+6. delay(50): Memberikan jeda 50 milidetik di akhir setiap iterasi loop(). Ini bisa berguna untuk stabilitas, mengurangi penggunaan CPU, atau memberikan waktu bagi proses lain (jika ada, seperti interrupt) untuk berjalan.
