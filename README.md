@@ -294,6 +294,16 @@ Penjelasan Rinci `readSendDatasensor()`:
 - Menambahkan Status Trigger ke JSON: Status `trig[0]` dan `trig[1]` ditambahkan.
 - Serialisasi dan Pengiriman JSON: Data JSON dikirim melalui `Serial`.
 
+Alamat register yang dijelaskan pada program/penjelasan diatas menyesuaikan pada datasheet ketiga sensor tersebut;
+1. **Untuk CWT-TH04S**
+
+![Addres yang digunakan pada sensor CWT-TH04S](https://github.com/Fathihzhafran/MBKM_Aeroponik_documentation/blob/e7a1e4e433fcecf48962778f1d58d0741bd61c6e/Image/Screenshot%202025-05-30%20162419.png)
+
+2. **Untuk CWT-Soil-THC-S**
+
+![Addres yang digunakan pada sensor CWT-Soil-THC-S](https://github.com/Fathihzhafran/MBKM_Aeroponik_documentation/blob/e7a1e4e433fcecf48962778f1d58d0741bd61c6e/Image/Screenshot%202025-05-30%20162102.png)
+
+
 ### 7. Fungsi loop
 
 Fungsi loop() adalah inti dari program Arduino yang berjalan terus-menerus setelah fungsi setup() selesai dieksekusi.
