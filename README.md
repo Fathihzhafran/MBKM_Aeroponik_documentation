@@ -1,5 +1,7 @@
 # **MBKM Aeroponik documentation** :seedling:
-berisi terkait dokumentasi MBKM Aeroponik dari kesleuruhan sistem/design/program 
+Dokumentasi untuk sistem **MBKM Aeroponik**, mencakup seluruh aspek dari sistem, desain, hingga pemrograman yang digunakan dalam implementasi proyek ini.
+
+_by fathih_
 
 ## Daftar isi Dokumentasi Sistem Aeroponik 
 
@@ -25,15 +27,15 @@ Bagian ini menjelaskan program Arduino yang dijalankan pada **board ATmega128** 
 - Berkomunikasi dua arah dengan **panel master (PC/komputer)** melalui serial, dalam format **JSON**.
 
 ### Daftar Isi Penjelasan Program
-1.  [Pendahuluan](###pendahuluan-program)
-2.  [Inklusi Library dan Definisi Global](###inklusi-library-dan-definisi-global)
-3.  [Fungsi Kontrol Transmisi Modbus](###fungsi-kontrol-transmisi-modbus)
-4.  [Fungsi `setup()`](###fungsi-setup)
-5.  [Fungsi `updateTriggers()`](###fungsi-updatetriggers)
-6.  [Fungsi `readSendDatasensor()`](###fungsi-readsenddatasensor)
-7.  [Fungsi `loop()`](###fungsi-loop)
-8.  [Kesimpulan](###kesimpulan-program)
 
+1. [Pendahuluan Program](#1-pendahuluan-program)  
+2. [Inklusi Library dan Definisi Global](#2-inklusi-library-dan-definisi-global)  
+3. [Fungsi Kontrol Transmisi Modbus](#3-fungsi-kontrol-transmisi-modbus)  
+4. [Fungsi `setup()`](#4-fungsi-setup)  
+5. [Fungsi `updateTriggers()`](#5-fungsi-updatetriggers)  
+6. [Fungsi `readSendDatasensor()`](#6-fungsi-readsenddatasensor)  
+7. [Fungsi `loop()`](#7-fungsi-loop)  
+8. [Kesimpulan Program](#8-kesimpulan-program)
 ---
 
 ### 1. Pendahuluan Program
@@ -48,7 +50,7 @@ Program ini mengubah Arduino ATmega128 menjadi sebuah sistem kontrol dan monitor
 
 ### 2. Inklusi Library dan Definisi Global
 
-Bagian awal kode berisi deklarasi library yang dibutuhkan dan variabel global yang akan digunakan di seluruh program.
+Bagian awal kode mencakup library yang digunakan dan variabel global yang diperlukan dalam program:
 
 ```cpp
 // Bagian ini adalah tempat kita menyertakan library-library yang dibutuhkan.
@@ -86,20 +88,20 @@ uint16_t holdingRegister[20];      // Array holding register serbaguna.
 StaticJsonDocument<512> jsonDoc;
 ```
 Penjelasan Variabel Global:
-- PinoutOutsealAtmega128.h: File header kustom yang mendefinisikan nama-nama pin (seperti DM, R1, S1, dll.) agar sesuai dengan papan Outseal ATmega128 Anda. Keberadaan dan keakuratan file ini sangat penting.
-- ModbusMaster.h: Library yang menyediakan fungsionalitas untuk menjadikan Arduino sebagai perangkat Master dalam jaringan Modbus RTU, memungkinkannya meminta data dari perangkat Slave (sensor).
-- ArduinoJson.h: Library serbaguna untuk memudahkan pembuatan dan parsing (pembacaan) data dalam format JSON, yang umum digunakan untuk pertukaran data terstruktur.
-- nodes[6]: Sebuah array yang akan menyimpan 6 objek ModbusMaster. Setiap objek akan mengelola komunikasi dengan satu sensor Modbus.
-- sensorIDs[6]: Array konstanta integer yang menyimpan alamat (ID) Modbus dari keenam sensor yang akan dihubungi. Urutan ID di sini harus sesuai dengan urutan objek nodes.
-- trig[2]: Array integer untuk menyimpan status dari dua input digital (S1 dan S2). Biasanya, nilai 1 menandakan input aktif (misalnya, tombol ditekan atau sensor terpicu menjadi LOW), dan 0 menandakan tidak aktif.
-- OUT_1, OUT_2, OUT_3, OUT_4: Variabel integer yang digunakan untuk menyimpan status yang diinginkan (ON/OFF, direpresentasikan sebagai 1/0) untuk output digital. OUT_4 dideklarasikan tetapi dalam logika loop() saat ini tidak secara eksplisit mengontrol output fisik.
-- IN_1, IN_2: Variabel integer untuk menyimpan hasil pembacaan langsung dari pin input digital S1 dan S2.
-- holdingRegisterOutput[3], holdingRegisterInput[2], holdingRegister[20]: Array-array ini berfungsi sebagai buffer data internal. Mereka dapat digunakan untuk memetakan status I/O ke format register Modbus jika Arduino juga dirancang untuk berperan sebagai perangkat Slave Modbus, atau hanya sebagai cara terstruktur untuk mengelola data state internal.
-- jsonDoc: Objek dari library ArduinoJson yang digunakan untuk membangun struktur data JSON sebelum dikirim melalui serial. Ukuran 512 byte adalah kapasitas memori yang dialokasikan untuk dokumen JSON ini; jika data JSON Anda lebih besar, ukuran ini perlu ditingkatkan.
+- `PinoutOutsealAtmega128.h`: File header kustom yang mendefinisikan nama-nama pin (seperti `DM`, `R1`, `S1`, dll.) agar sesuai dengan papan Outseal ATmega128 Anda. Keberadaan dan keakuratan file ini sangat penting.
+- `ModbusMaster.h`: Library yang menyediakan fungsionalitas untuk menjadikan Arduino sebagai perangkat Master dalam jaringan Modbus RTU, memungkinkannya meminta data dari perangkat Slave (sensor).
+- `ArduinoJson.h`: Library serbaguna untuk memudahkan pembuatan dan parsing (pembacaan) data dalam format JSON, yang umum digunakan untuk pertukaran data terstruktur.
+- `nodes[6]`: Sebuah array yang akan menyimpan 6 objek `ModbusMaster`. Setiap objek akan mengelola komunikasi dengan satu sensor Modbus.
+- `sensorIDs[6]`: Array konstanta integer yang menyimpan alamat (ID) Modbus dari keenam sensor yang akan dihubungi. Urutan ID di sini harus sesuai dengan urutan objek `nodes`.
+- `trig[2]`: Array integer untuk menyimpan status dari dua input digital (`S1` dan `S2`). Biasanya, nilai `1` menandakan input aktif (misalnya, tombol ditekan atau sensor terpicu menjadi `LOW`), dan `0` menandakan tidak aktif.
+- `OUT_1`, `OUT_2`, `OUT_3`, `OUT_4`: Variabel integer yang digunakan untuk menyimpan status yang diinginkan (ON/OFF, direpresentasikan sebagai 1/0) untuk output digital. `OUT_4` dideklarasikan tetapi dalam logika `loop()` saat ini tidak secara eksplisit mengontrol output fisik.
+- `IN_1`, `IN_2`: Variabel integer untuk menyimpan hasil pembacaan langsung dari pin input digital `S1` dan `S2`.
+- `holdingRegisterOutput[3]`, `holdingRegisterInput[2]`, `holdingRegister[20]`: Array-array ini berfungsi sebagai buffer data internal. Mereka dapat digunakan untuk memetakan status I/O ke format register Modbus jika Arduino juga dirancang untuk berperan sebagai perangkat Slave Modbus, atau hanya sebagai cara terstruktur untuk mengelola data state internal.
+- `jsonDoc`: Objek dari library ArduinoJson yang digunakan untuk membangun struktur data JSON sebelum dikirim melalui serial. Ukuran `512` byte adalah kapasitas memori yang dialokasikan untuk dokumen JSON ini; jika data JSON Anda lebih besar, ukuran ini perlu ditingkatkan.
 
 ### 3. Fungsi Kontrol Transmisi Modbus
 
-Untuk komunikasi RS485, yang bersifat half-duplex (mengirim atau menerima secara bergantian pada jalur yang sama), diperlukan kontrol arah transmisi. Pin DM (Driver Master, sesuai definisi di PinoutOutsealAtmega128.h) digunakan untuk tujuan ini, biasanya terhubung ke pin DE (Driver Enable) dan RE (Receiver Enable) pada chip transceiver RS485 dengan MAX485.
+Untuk komunikasi RS485, yang bersifat half-duplex (mengirim atau menerima secara bergantian pada jalur yang sama), diperlukan kontrol arah transmisi. Pin `DM` (Driver Master, sesuai definisi di `PinoutOutsealAtmega128.h`) digunakan untuk tujuan ini, biasanya terhubung ke pin `DE` (Driver Enable) dan RE (Receiver Enable) pada chip transceiver RS485 dengan MAX485.
 
 ```cpp
 // --- Fungsi untuk Kontrol Transmisi RS485 ---
@@ -118,10 +120,10 @@ void postTransmission() {
 ```
 
 Penjelasan
-- preTransmission(): Fungsi ini secara otomatis dipanggil oleh library ModbusMaster tepat sebelum Arduino mengirimkan permintaan Modbus ke sensor. Dengan mengatur pin DM ke HIGH, transceiver RS485 diaktifkan untuk mode transmisi (mengirim data).
-- postTransmission(): Fungsi ini dipanggil secara otomatis setelah Arduino selesai mengirimkan permintaan Modbus. Dengan mengatur pin DM ke LOW, transceiver RS485 kembali ke mode penerimaan, siap untuk menangkap respons dari sensor.
+- `preTransmission()`: Fungsi ini secara otomatis dipanggil oleh library `ModbusMaster` tepat sebelum Arduino mengirimkan permintaan Modbus ke sensor. Dengan mengatur pin `DM` ke `HIGH`, transceiver RS485 diaktifkan untuk mode transmisi (mengirim data).
+- `postTransmission()`: Fungsi ini dipanggil secara otomatis setelah Arduino selesai mengirimkan permintaan Modbus. Dengan mengatur pin `DM` ke `LOW`, transceiver RS485 kembali ke mode penerimaan, siap untuk menangkap respons dari sensor.
 
-### 4. Fungsi setup()
+### 4. Fungsi setup
 
 Fungsi yang mana diinisiasikan sekali dalam program arduino, dengan melakukan konfigurasi dan inialisasi awal yang diperlukan agar program dapat berjalan dengan lancar dan benar.
 
@@ -169,21 +171,21 @@ void setup() {
 }
 ```
 
-Penjelasan terkait setup();
-- Pin DM diinisialisasi sebagai OUTPUT dan disetel ke LOW (mode terima default untuk RS485).
-- Serial.begin(9600): Mengaktifkan port serial standar (biasanya terhubung ke komputer melalui USB) untuk debugging, menerima perintah, dan mengirim data JSON.
-- Serial1.begin(9600): Mengaktifkan port serial perangkat keras kedua (Serial1 pada ATmega128, biasanya pin TX1 dan RX1) yang didedikasikan untuk komunikasi Modbus RTU dengan sensor-sensor. Sangat penting bahwa baud rate ini sesuai dengan konfigurasi semua sensor Modbus di jaringan.
-- Loop Inisialisasi Node Modbus: Loop for berjalan sebanyak jumlah sensor (6 kali). Di setiap iterasi:
-    - nodes[i].begin(sensorIDs[i], Serial1): Menginisialisasi objek ModbusMaster ke-i. Ini memberitahu library ID slave Modbus yang akan diajak bicara (sensorIDs[i]) dan port serial mana yang akan digunakan (Serial1).
-    - nodes[i].preTransmission(preTransmission) dan nodes[i].postTransmission(postTransmission): Mendaftarkan fungsi-fungsi callback yang telah kita buat sebelumnya untuk menangani kontrol arah transceiver RS485 secara otomatis setiap kali objek       - nodes[i] melakukan transaksi Modbus.
-- Inisialisasi Variabel Status: Variabel OUT_x (status output) diatur ke 0 (OFF), dan IN_x (status input) juga diatur ke 0 sebagai nilai awal.
+Penjelasan terkait `setup()`;
+- Pin `DM` diinisialisasi sebagai `OUTPUT` dan disetel ke `LOW` (mode terima default untuk RS485).
+- `Serial.begin(9600)`: Mengaktifkan port serial standar (biasanya terhubung ke komputer melalui USB) untuk debugging, menerima perintah, dan mengirim data JSON.
+- `Serial1.begin(9600)`: Mengaktifkan port serial perangkat keras kedua (`Serial1` pada ATmega128, biasanya pin TX1 dan RX1) yang didedikasikan untuk komunikasi Modbus RTU dengan sensor-sensor. Sangat penting bahwa baud rate ini sesuai dengan konfigurasi semua sensor Modbus di jaringan.
+- Loop Inisialisasi Node Modbus: Loop `for` berjalan sebanyak jumlah sensor (6 kali). Di setiap iterasi:
+    - `nodes[i].begin(sensorIDs[i], Serial1)`: Menginisialisasi objek `ModbusMaster` ke-`i`. Ini memberitahu library ID slave Modbus yang akan diajak bicara (`sensorIDs[i]`) dan port serial mana yang akan digunakan (`Serial1`).
+    - `nodes[i].preTransmission(preTransmission)` dan `nodes[i].postTransmission(postTransmission)`: Mendaftarkan fungsi-fungsi callback yang telah kita buat sebelumnya untuk menangani kontrol arah transceiver RS485 secara otomatis setiap kali objek `nodes[i]` melakukan transaksi Modbus.
+- Inisialisasi Variabel Status: Variabel `OUT_x` (status output) diatur ke `0` (OFF), dan `IN_x` (status input) juga diatur ke `0` sebagai nilai awal.
 - Konfigurasi pinMode():
-    - Pin-pin yang terhubung ke relay (R1, R2, R3, R4) dikonfigurasi sebagai OUTPUT.
-    - Pin-pin yang terhubung ke input digital (S1, S2) dikonfigurasi sebagai INPUT. Pertimbangkan penggunaan INPUT_PULLUP jika input Anda adalah saklar atau sensor kontak yang terhubung ke ground saat aktif, untuk menghindari kebutuhan resistor pull-up eksternal.
+    - Pin-pin yang terhubung ke relay (`R1`, `R2`, `R3`, `R4`) dikonfigurasi sebagai `OUTPUT`.
+    - Pin-pin yang terhubung ke input digital (`S1`, `S2`) dikonfigurasi sebagai `INPUT`. Pertimbangkan penggunaan `INPUT_PULLUP` jika input Anda adalah saklar atau sensor kontak yang terhubung ke ground saat aktif, untuk menghindari kebutuhan resistor pull-up eksternal.
 
 ### 5. Fungsi UpdateTriggers
 
-Fungsi ini bertanggung jawab untuk membaca status terkini dari input digital (S1 dan S2) dan memperbarui variabel-variabel global yang menyimpan status pemicu (trigger) ini. Ini memastikan bahwa representasi internal dari status input selalu sinkron dengan kondisi fisik input.
+Fungsi ini bertanggung jawab untuk membaca status terkini dari input digital (`S1` dan `S2`) dan memperbarui variabel-variabel global yang menyimpan status pemicu (trigger) ini. Ini memastikan bahwa representasi internal dari status input selalu sinkron dengan kondisi fisik input.
 
 ```cpp
 // --- Fungsi untuk Memperbarui Status Pemicu (Trigger) ---
@@ -209,23 +211,98 @@ void updateTriggers() {
 ```
 Penjelasan:
 
-- trig[0] = digitalRead(S1) == LOW;: Baris ini membaca level logika pada pin S1. Jika levelnya LOW (yang seringkali berarti aktif untuk sensor atau tombol yang terhubung ke ground), maka digitalRead(S1) == LOW akan menghasilkan true (yang dikonversi menjadi 1 saat disimpan ke trig[0]). Jika HIGH, hasilnya false (dikonversi menjadi 0). Proses serupa terjadi untuk S2 dan trig[1].
-- Status dari trig[] kemudian disalin ke holdingRegisterInput[] dan juga ke elemen-elemen tertentu (holdingRegister[2] dan holdingRegister[3]) dari array holdingRegister[] utama. Ini menyediakan beberapa cara untuk mengakses status input yang sama, yang mungkin berguna tergantung pada bagaimana data digunakan atau diekspos.
+- `trig[0] = digitalRead(S1) == LOW`;: Baris ini membaca level logika pada pin `S1`. Jika levelnya `LOW` (yang seringkali berarti aktif untuk sensor atau tombol yang terhubung ke ground), maka `digitalRead(S1) == LOW` akan menghasilkan `true` (yang dikonversi menjadi `1` saat disimpan ke `trig[0]`). Jika `HIGH`, hasilnya `false` (dikonversi menjadi `0`). Proses serupa terjadi untuk `S2` dan `trig[1]`.
+- Status dari `trig[]` kemudian disalin ke `holdingRegisterInput[]` dan juga ke elemen-elemen tertentu (`holdingRegister[2]` dan `holdingRegister[3]`) dari array `holdingRegister[]` utama. Ini menyediakan beberapa cara untuk mengakses status input yang sama, yang mungkin berguna tergantung pada bagaimana data digunakan atau diekspos.
 
 ### 6. Fungsi ReadSendDatasensor
-  
+
+Fungsi ini melakukan iterasi melalui semua sensor yang terkonfigurasi, membaca data dari masing-masing sensor menggunakan protokol Modbus, memformat data tersebut ke dalam array JSON, dan akhirnya mengirimkan array JSON ini melalui port `Serial` ke host. Kode di bawah ini mencerminkan logika asli dari program yang Anda berikan.
+
+```cpp
+// --- Fungsi untuk Membaca Sensor dan Mengirim Data via JSON ---
+void readSendDatasensor() {
+  jsonDoc.clear(); // Mengosongkan dokumen JSON dari data sebelumnya untuk memastikan data segar.
+  JsonArray dataArray = jsonDoc.to<JsonArray>(); // Membuat struktur array JSON di dalam dokumen jsonDoc.
+
+  // Loop untuk membaca data dari setiap sensor yang terdaftar dalam array 'nodes'.
+  for (int i = 0; i < 6; i++) {
+    uint8_t result; // Variabel untuk menyimpan kode status hasil dari operasi Modbus (sukses/gagal).
+
+
+    // Logika pembacaan khusus jika ID sensor adalah 3 atau 6.
+    if (sensorIDs[i] == 3 || sensorIDs[i] == 6) {
+      // Membaca register 0x0001. Parameter kedua menggunakan sensorIDs[i] sebagai jumlah register.
+      result = nodes[i].readInputRegisters(0x0001, sensorIDs[i]); 
+      if (result == nodes[i].ku8MBSuccess) { 
+        float sensorValue = float(nodes[i].getResponseBuffer(0x00) / 10.0F);
+        dataArray.add(sensorValue == 0.0 ? 0 : sensorValue);
+      } else {
+        dataArray.add(nullptr); 
+      }
+
+      // Membaca register 0x0003. Parameter kedua menggunakan sensorIDs[i] sebagai jumlah register.
+      result = nodes[i].readInputRegisters(0x0003, sensorIDs[i]); 
+      if (result == nodes[i].ku8MBSuccess) {
+        float sensorValue = float(nodes[i].getResponseBuffer(0x00) / 10.0F);
+        dataArray.add(sensorValue == 0.0 ? 0 : sensorValue);
+      } else {
+        dataArray.add(nullptr);
+      }
+
+      // Membaca register 0x0008. Parameter kedua menggunakan sensorIDs[i] sebagai jumlah register.
+      result = nodes[i].readInputRegisters(0x0008, sensorIDs[i]); 
+      if (result == nodes[i].ku8MBSuccess) {
+        float sensorValue = float(nodes[i].getResponseBuffer(0x00) / 10.0F);
+        dataArray.add(sensorValue == 0.0 ? 0 : sensorValue);
+      } else {
+        dataArray.add(nullptr);
+      }
+    } else { // Logika untuk sensor lainnya (yang ID-nya bukan 3 atau 6).
+      // Membaca dari alamat 0x0000. Parameter kedua menggunakan sensorIDs[i] sebagai jumlah register.
+      result = nodes[i].readInputRegisters(0x0000, sensorIDs[i]); 
+      if (result == nodes[i].ku8MBSuccess) {
+        float tempValue = float(nodes[i].getResponseBuffer(1) / 10.0F); 
+        float humidValue = float(nodes[i].getResponseBuffer(0) / 10.0F);
+        
+        dataArray.add(tempValue == 0.0 ? 0 : tempValue);
+        dataArray.add(humidValue == 0.0 ? 0 : humidValue);
+      } else {
+        dataArray.add(nullptr); 
+        dataArray.add(nullptr); 
+      }
+    }
+    delay(50); 
+  }
+  updateTriggers(); 
+  dataArray.add(trig[0]);
+  dataArray.add(trig[1]);
+  serializeJson(dataArray, Serial);
+  Serial.println(); 
+}
+```
+Penjelasan Rinci `readSendDatasensor()`:
+
+- `jsonDoc.clear()` dan `JsonArray dataArray = jsonDoc.to<JsonArray>()`: Mempersiapkan objek JSON untuk diisi data baru.
+- Loop Pembacaan Sensor: Iterasi untuk setiap sensor.
+  - Logika Kondisional (ID 3 & 6 vs Lainnya): Sensor dengan ID 3 atau 6 dibaca dari tiga alamat register berbeda (`0x0001`, `0x0003`, `0x0008`). Sensor lainnya dibaca dari alamat `0x0000`.
+  - `nodes[i].readInputRegisters(alamat_register, sensorIDs[i])`: Fungsi Modbus ini dipanggil dengan `alamat_register` sebagai alamat awal, dan `sensorIDs[i]` (nilai ID sensor, misal 2, 3, 7, dst.) sebagai parameter jumlah register yang akan dibaca. Penting untuk memverifikasi bahwa penggunaan `sensorIDs[i]` sebagai jumlah register ini sesuai dengan bagaimana data diharapkan oleh sensor Anda dan bagaimana library `ModbusMaster` menginterpretasikannya. Jika sensor hanya menyediakan satu atau dua register pada alamat tersebut, namun `sensorIDs[i]` nilainya lebih besar, ini bisa menyebabkan pembacaan yang tidak sesuai atau error, tergantung implementasi library dan perangkat Modbus slave.
+  - `result == nodes[i].ku8MBSuccess`: Pemeriksaan status keberhasilan transaksi Modbus.
+  - `nodes[i].getResponseBuffer(indeks_buffer)`: Mengambil data dari buffer respons. Indeks yang digunakan (`0x00` atau `0` dan `1`) harus sesuai dengan data yang diharapkan dari sensor untuk pembacaan tersebut.
+  - `dataArray.add(...)`: Menambahkan data sensor atau `nullptr` (jika gagal) ke array JSON.
+  - `delay(50)`: Jeda antar pembacaan sensor.
+- `updateTriggers()` (Kedua): Memperbarui status trigger sebelum ditambahkan ke JSON.
+- Menambahkan Status Trigger ke JSON: Status `trig[0]` dan `trig[1]` ditambahkan.
+- Serialisasi dan Pengiriman JSON: Data JSON dikirim melalui `Serial`.
+
 ### 7. Fungsi loop
 
-Langsung saja-lah ya
+Fungsi loop() adalah inti dari program Arduino yang berjalan terus-menerus setelah fungsi setup() selesai dieksekusi.
 
 ```cpp
 // --- Fungsi Loop Utama ---
 // Fungsi loop() berjalan berulang kali selamanya setelah setup() selesai.
 void loop() {
   // 1. Baca status input digital S1 dan S2 secara langsung.
-  // Nilai ini disimpan ke IN_1 dan IN_2.
-  // Pembaruan trig[] di sini mungkin tumpang tindih dengan updateTriggers(),
-  // namun memastikan IN_1/IN_2 dan trig[] selalu up-to-date di awal loop.
   IN_1 = digitalRead(S1) == LOW;
   IN_2 = digitalRead(S2) == LOW;
 
@@ -234,18 +311,15 @@ void loop() {
 
   // 2. Periksa apakah ada data (perintah) yang masuk dari port Serial (dari host).
   if (Serial.available() > 0) {
-    // Jika ada data, baca seluruh string perintah sampai karakter newline ('\n') ditemukan.
     String input = Serial.readStringUntil('\n');
-    input.trim(); // Hapus spasi putih (whitespace) di awal atau akhir string perintah.
+    input.trim(); 
 
-    // Proses perintah berdasarkan karakter pertama dari string input.
-    // Ini adalah cara sederhana untuk routing perintah.
     switch (input.charAt(0)) {
-      case 'P': // Perintah yang dimulai dengan 'P' diasumsikan untuk PUMP (Pompa/Output).
+      case 'P': // Perintah untuk PUMP (Pompa/Output).
         if (input == "PUMP1_ON") {
-          OUT_1 = 1; // Set status target OUT_1 menjadi ON.
+          OUT_1 = 1; 
         } else if (input == "PUMP1_OFF") {
-          OUT_1 = 0; // Set status target OUT_1 menjadi OFF.
+          OUT_1 = 0; 
         } else if (input == "PUMP2_ON") {
           OUT_2 = 1;
         } else if (input == "PUMP2_OFF") {
@@ -255,31 +329,23 @@ void loop() {
         } else if (input == "PUMP3_OFF") {
           OUT_3 = 0;
         } else {
-          // Jika perintah 'P' tidak dikenal, kirim pesan error.
           Serial.println("Unknown PUMP command: " + input);
         }
-        break; // Akhir dari case 'P'.
+        break; 
 
-      case 'R': // Perintah yang dimulai dengan 'R' diasumsikan untuk READ (Baca Data).
+      case 'R': // Perintah untuk READ (Baca Data).
         if (input == "READ_DATA") {
-          // Panggil fungsi readSendDatasensor() sebanyak 5 kali.
-          // Ini berarti Arduino akan membaca semua sensor dan mengirim paket JSON
-          // sebanyak 5 kali berturut-turut untuk satu perintah "READ_DATA".
-          // Jika Anda hanya ingin satu kali pembacaan dan pengiriman per perintah,
-          // hapus loop 'for' ini dan panggil readSendDatasensor() sekali saja.
           for (int i = 0; i < 5; i++) {
             readSendDatasensor();
           }
         } else {
           Serial.println("Unknown READ command: " + input);
         }
-        break; // Akhir dari case 'R'.
+        break; 
 
-      case 'A': // Perintah yang dimulai dengan 'A' diasumsikan untuk ALARM.
+      case 'A': // Perintah untuk ALARM.
         if (input == "ALARM1_ON") {
           digitalWrite(R3, HIGH); // Langsung mengaktifkan Relay R3.
-                                  // (Gunakan HIGH atau LOW tergantung cara relay Anda di-wire,
-                                  //  misalnya jika relay aktif LOW, maka gunakan LOW untuk ON).
                                   // Asumsi di sini: HIGH = ON.
         } else if (input == "ALARM1_OFF") {
           digitalWrite(R3, LOW);  // Langsung menonaktifkan Relay R3.
@@ -287,80 +353,50 @@ void loop() {
         } else {
           Serial.println("Unknown ALARM command: " + input);
         }
-        break; // Akhir dari case 'A'.  
+        break;  
 
-      default: // Jika karakter pertama perintah tidak cocok dengan case manapun.
+      default: 
         Serial.println("Unknown Command: " + input);
         break;
     }
   }
 
   // 3. Perbarui array-array holdingRegister dengan status output dan input saat ini.
-  // Ini menyatukan status dari berbagai sumber (perintah serial, pembacaan input)
-  // ke dalam satu set buffer data.
-  holdingRegisterOutput[0] = OUT_1; // Status target untuk PUMP1.
-  holdingRegisterOutput[1] = OUT_2; // Status target untuk PUMP2.
-  holdingRegisterOutput[2] = OUT_3; // Status target untuk PUMP3 (yang mengontrol R4).
+  holdingRegisterOutput[0] = OUT_1; 
+  holdingRegisterOutput[1] = OUT_2; 
+  holdingRegisterOutput[2] = OUT_3; 
 
-  // holdingRegisterInput sudah diperbarui oleh updateTriggers() atau pembacaan langsung IN_1/IN_2 di atas.
   holdingRegisterInput[0] = IN_1; 
   holdingRegisterInput[1] = IN_2;
 
-  // Salin nilai dari buffer input/output spesifik ke array holdingRegister utama.
-  // Pemetaan ini menentukan bagaimana status I/O internal direpresentasikan dalam holdingRegister.
-  holdingRegister[0] = holdingRegisterOutput[0]; // Map OUT_1 ke holdingRegister[0].
-  holdingRegister[1] = holdingRegisterOutput[1]; // Map OUT_2 ke holdingRegister[1].
-  holdingRegister[2] = holdingRegisterInput[0];  // Map IN_1 (status S1) ke holdingRegister[2].
-  holdingRegister[3] = holdingRegisterInput[1];  // Map IN_2 (status S2) ke holdingRegister[3].
-  holdingRegister[4] = holdingRegisterOutput[2]; // Map OUT_3 ke holdingRegister[4].
+  holdingRegister[0] = holdingRegisterOutput[0]; 
+  holdingRegister[1] = holdingRegisterOutput[1]; 
+  holdingRegister[2] = holdingRegisterInput[0];  
+  holdingRegister[3] = holdingRegisterInput[1];  
+  holdingRegister[4] = holdingRegisterOutput[2]; 
 
   // 4. Tulis status output dari holdingRegister ke pin-pin relay fisik.
-  // Relay R3 dikontrol langsung oleh perintah 'A' (ALARM) dan tidak melalui sistem holdingRegister ini.
-  digitalWrite(R1, holdingRegister[0]); // Relay R1 dikontrol oleh status OUT_1.
-  digitalWrite(R2, holdingRegister[1]); // Relay R2 dikontrol oleh status OUT_2.
-  digitalWrite(R4, holdingRegister[4]); // Relay R4 dikontrol oleh status OUT_3.
-                                        // (karena holdingRegister[4] = holdingRegisterOutput[2] = OUT_3).
+  digitalWrite(R1, holdingRegister[0]); 
+  digitalWrite(R2, holdingRegister[1]); 
+  digitalWrite(R4, holdingRegister[4]);                                     
 
   // 5. Panggil updateTriggers() lagi di akhir loop.
-  // Ini memastikan bahwa sebelum iterasi loop berikutnya dimulai, status pemicu
-  // (trig[], holdingRegisterInput[], holdingRegister[2,3]) sudah yang paling baru.
   updateTriggers();
 
   // 6. Beri jeda singkat pada akhir setiap iterasi loop.
-  // Ini bisa membantu dalam mengurangi beban CPU, memberikan waktu untuk proses lain (jika ada interrupt),
-  // atau menyesuaikan dengan interval waktu tertentu jika program ini bagian dari sistem yang lebih besar.
-  // Nilai 50ms adalah contoh; sesuaikan sesuai kebutuhan.
   delay(50); 
 }
 ```
-Penjelasan Rinci loop():
-1. Pembacaan Input Awal: IN_1 = digitalRead(S1) == LOW; dan IN_2 = digitalRead(S2) == LOW; membaca status pin S1 dan S2. Hasilnya (1 jika LOW, 0 jika HIGH) disimpan ke IN_1 dan IN_2, lalu disalin ke trig[0] dan trig[1].
-
+Penjelasan Rinci `loop()`:
+1. Pembacaan Input Awal: Status pin `S1` dan `S2` dibaca dan disimpan ke `IN_1`, `IN_2`, serta `trig[]`.
 2. Pemrosesan Perintah Serial:
-- if (Serial.available() > 0): Mengecek apakah ada data yang dikirim dari host melalui port Serial.
-- String input = Serial.readStringUntil('\n');: Jika ada, membaca seluruh baris teks hingga karakter newline (\n) sebagai perintah.
-- input.trim(): Menghapus spasi di awal/akhir perintah.
-- switch (input.charAt(0)): Memproses perintah berdasarkan karakter pertamanya:
-  - case 'P' (PUMP): Jika perintah diawali 'P', kode akan membandingkan input dengan string perintah lengkap seperti "PUMP1_ON", "PUMP1_OFF", dll. Jika cocok, variabel OUT_1, OUT_2, atau OUT_3 akan diubah (menjadi 1 untuk ON, 0 untuk OFF). Perhatikan bahwa OUT_3 nantinya akan mengontrol relay R4.
-  - case 'R' (READ): Jika perintah adalah "READ_DATA", fungsi readSendDatasensor() akan dipanggil 5 kali berturut-turut. Ini berarti untuk satu perintah "READ_DATA", Arduino akan melakukan 5 siklus pembacaan semua sensor dan mengirim 5 paket JSON terpisah.
-  - case 'A' (ALARM): Jika perintah "ALARM1_ON" atau "ALARM1_OFF", pin relay R3 akan langsung dikontrol menggunakan digitalWrite(). Ini berbeda dengan relay lain yang dikontrol melalui variabel OUT_x.
-  - default: Jika karakter pertama tidak cocok dengan 'P', 'R', atau 'A', atau jika perintah lengkap tidak dikenal dalam sub-kondisi, pesan error akan dikirim kembali melalui Serial.
-
-3. Pembaruan holdingRegister:
-- Status variabel OUT_1, OUT_2, OUT_3 disalin ke holdingRegisterOutput[].
-- Status IN_1, IN_2 disalin ke holdingRegisterInput[].
-- Kemudian, nilai-nilai dari holdingRegisterOutput[] dan holdingRegisterInput[] dipetakan ke dalam array holdingRegister[] yang lebih besar. Ini menciptakan representasi terpusat dari status I/O sistem.
-    - holdingRegister[0] untuk OUT_1
-    - holdingRegister[1] untuk OUT_2
-    - holdingRegister[2] untuk IN_1 (status S1)
-    - holdingRegister[3] untuk IN_2 (status S2)
-    - holdingRegister[4] untuk OUT_3
-
-4. Pengaktifan Relay Fisik:
-- digitalWrite(R1, holdingRegister[0]);: Mengatur kondisi pin R1 sesuai dengan nilai di holdingRegister[0] (yang berasal dari OUT_1).
-- digitalWrite(R2, holdingRegister[1]);: Mengatur pin R2 sesuai OUT_2.
-- digitalWrite(R4, holdingRegister[4]);: Mengatur pin R4 sesuai OUT_3.
-- Relay R3 tidak diatur di sini karena sudah dikontrol langsung dalam case 'A'.
-
-5. updateTriggers() (Akhir Loop): Memanggil fungsi ini lagi untuk memastikan bahwa sebelum loop berikutnya dimulai, semua variabel yang terkait dengan status input (trig[], holdingRegisterInput[], dll.) sudah mencerminkan kondisi fisik terkini dari S1 dan S2.
-6. delay(50): Memberikan jeda 50 milidetik di akhir setiap iterasi loop(). Ini bisa berguna untuk stabilitas, mengurangi penggunaan CPU, atau memberikan waktu bagi proses lain (jika ada, seperti interrupt) untuk berjalan.
+   - Mengecek data masuk via `Serial.available()`.
+   - Membaca perintah sebagai `String` hingga newline.
+   - `switch` statement memproses perintah berdasarkan karakter pertama:
+     - `case 'P'` (PUMP): Mengubah status `OUT_1`, `OUT_2`, atau `OUT_3` berdasarkan perintah `PUMPx_ON`/`PUMPx_OFF`. `OUT_3` terhubung ke `R4`.
+     - `case 'R'` (READ): Jika `"READ_DATA"`, memanggil `readSendDatasensor()` 5 kali.
+     - `case 'A'` (ALARM): Mengontrol relay `R3` secara langsung dengan `digitalWrite()`.
+     - `default`: Menangani perintah tidak dikenal.
+3. Pembaruan `holdingRegister`: Menyinkronkan status `OUT_x` dan `IN_x` ke dalam array `holdingRegisterOutput`, `holdingRegisterInput`, dan `holdingRegister`.
+4. Pengaktifan Relay Fisik: `digitalWrite()` digunakan untuk mengatur pin relay `R1`, `R2`, dan `R4` sesuai nilai di `holdingRegister`. `R3` dikontrol terpisah.
+5. `updateTriggers()` (Akhir Loop): Memastikan status input termutakhir.
