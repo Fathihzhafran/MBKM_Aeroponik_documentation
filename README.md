@@ -3,13 +3,26 @@ berisi terkait dokumentasi MBKM Aeroponik dari kesleuruhan sistem/design/program
 
 ## Daftar isi Dokumentasi Sistem Aeroponik 
 
+1. [Sistem Keseluruhan](#1-sistem-keseluruhan)  
+2. [Desain dari Sistem](#2-desain-dari-sistem)  
+3. [Panduan Lengkap Program Panel Slave](#3-panduan-lengkap-program-panel-slave)
+
 ## 1. Sistem Keseluruhan 
+
+_(Bagian ini berisi penjelasan umum sistem aeroponik: perangkat keras yang digunakan, komunikasi antar panel, aliran data, dsb.)_
 
 ## 2. Desain dari sistem
 
+_(Bagian ini memuat skema desain sistem aeroponik, diagram blok, relasi antar modul, serta desain topologi komunikasi.)_
+
 ## 3. Panduan Lengkap Program Panel Slave
 
-Pada bagian ini membberikan penjelasan terkait program arduino yang dirancang untuk board ATmega128 dalam Outseal Mikrokontroler from PLC Outseal. yang mana berfungsi untuk membaca data dari beberapa sensor dengan menggunakan modbus RTU, yang mengendalikan output digital (relay) serta berkomunikasi dengan panel master melalui antarmuka serial menggunakan format JSON.
+Bagian ini menjelaskan program Arduino yang dijalankan pada **board ATmega128** dari **Outseal Mikrokontroler (PLC Outseal)**. Program ini digunakan untuk:
+
+- Membaca data dari sensor-sensor menggunakan protokol **Modbus RTU**.
+- Mengendalikan beberapa **output digital** seperti relay (untuk pompa, lampu, dll).
+- Membaca **input digital** dari sensor eksternal.
+- Berkomunikasi dua arah dengan **panel master (PC/komputer)** melalui serial, dalam format **JSON**.
 
 ### Daftar Isi Penjelasan Program
 1.  [Pendahuluan](###pendahuluan-program)
